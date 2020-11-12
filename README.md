@@ -34,6 +34,8 @@ pfa.plot(...)                                # Plot the training graphs
 ```
 
 Config Files
+
+Config files for `example.py` should be as shown below. Some sample config files can be found in the `config` folder.
 ```python
 cfg = {
     'METHOD': 'Standard',     # Which implementation to use
@@ -74,7 +76,9 @@ cfg = {
 ![Psi Error](https://github.com/adiah80/PyTorch-Factor-Analysis/blob/master/figures/Psi_error.png)
 
 ## Known issues
-Although around 100x faster than the `Numpy` and `Standard` implementations the `Vectorised` implementation often breaks for some test cases due to the inability to invert Singular matrices. These cases throw an error similar to: `RuntimeError: inverse_cpu: U(x,x) is zero, singular U.`
+Although around 100x faster than the `Numpy` and `Standard` implementations the `Vectorised` implementation often breaks for some test cases due to the inability to invert Singular matrices. 
+
+These cases throw an error similar to: `RuntimeError: inverse_cpu: U(x,x) is zero, singular U.`
 
 ## References
 
