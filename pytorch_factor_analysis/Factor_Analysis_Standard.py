@@ -4,7 +4,7 @@ from torch import matmul as mul
 from torch import inverse as inv
 from tqdm import trange, tqdm
 
-class FA:
+class FA_Standard:
     def __init__(self, cfg, device):
         self.cfg = cfg
         self.device = device
@@ -20,7 +20,7 @@ class FA:
         L_pred = torch.Tensor(np.random.rand(self.cfg['NUM_FEATURES'], self.cfg['NUM_FACTORS'])).to(self.device)
         S_pred = torch.Tensor(np.diag(np.random.randn(self.cfg['NUM_FEATURES']))).to(self.device)
 
-        # Run the EM    
+        # Run the EM Loop
         for iteration in trange(self.cfg['NUM_ITERATIONS']):
 
             # EXPECTATION

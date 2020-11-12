@@ -51,11 +51,12 @@ class FA_Numpy:
             self.metrics['S_error'].append(np.sum(np.abs(true_S - S_pred)))
 
             if iteration % self.cfg['LOG_FREQ'] == 0:
-                tqdm.write("[{:06d}/{:06d}] L_error: {:.10f} \t S_error: {:.10f}"\
+                tqdm.write("[{:06d}/{:06d}] L_error: {:.10f} \t S_error: {:.10f} \r"\
                            .format(iteration, 
                                    self.cfg['NUM_ITERATIONS'], 
                                    self.metrics['L_error'][-1], 
-                                   self.metrics['S_error'][-1]))
+                                   self.metrics['S_error'][-1]),
+                            end="\n")
         print('------------------------------------')
         print('Training Done.')
         self.L_pred = L_pred

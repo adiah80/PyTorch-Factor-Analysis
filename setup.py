@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.1",
     author="Aditya Ahuja",
     description="",
-    url="~",
+    url="https://github.com/adiah80/PyTorch-Factor-Analysis",    
     packages=setuptools.find_packages(),
     python_requires='>=3.6',
 )

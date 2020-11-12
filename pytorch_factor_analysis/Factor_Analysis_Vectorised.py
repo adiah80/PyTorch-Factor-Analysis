@@ -5,11 +5,31 @@ from torch import inverse as inv
 from tqdm import trange, tqdm
 
 class FA_Vectorised:
+    '''
+    This class vectorises the Factor Analysis implementations to avoid any 
+    explicit FOR-loops. As a result this code is significatly faster than the 
+    other two implementations. The major speedup is acheived by avoiding the 
+    For-loops in the `_get_expectation1` and `_get_expectation2` functions and 
+    instead using Matrix multiplications for aggregating over summations.
+
+    Although around 100x faster than the Numpy and Standard Torch Code, This 
+    implementation often breaks for some test cases due to the inability to 
+    invert Singular matrices.
+
+    These cases throw an error similar to: 
+        `RuntimeError: inverse_cpu: U(x,x) is zero, singular U.`
+
+    '''
+
     def __init__(self, cfg, device):
         self.cfg = cfg
         self.device = device
         
-    def train_EM(self, X, true_L, true_S):        
+    def train_EM(self, X, true_L, true_S):
+        '''
+        Train the algorithm on Observations - X.
+        Note that true_L and true_S are needed only for logging the metrics.
+        '''    
         # Initialize lists for training metrics
         self.metrics = {
             'L_error': [],
@@ -17,7 +37,7 @@ class FA_Vectorised:
         }
         
         # Set random Values for Params
-        L_pred = torch.Tensor(np.random.rand(self.cfg['NUM_FEATURES'], self.cfg['NUM_FACTORS'])).to(self.device)
+        L_pred = torch.Tensor(np.random.rand(self.cfg['NUM_FEATURES'], self.cfg['NUM_FACTORS'])*100).to(self.device)
         S_pred = torch.Tensor(np.diag(np.random.randn(self.cfg['NUM_FEATURES']))).to(self.device)
 
         # Run the EM Loop
@@ -35,7 +55,7 @@ class FA_Vectorised:
             DIFF_THRESHOLD = 1e-6
             Delta_L = torch.abs(L_pred - L_new).mean()
             Delta_S = torch.abs(S_pred - S_new).mean()
-            if(Delta_L < DIFF_THRESHOLD and Delta_S < DIFF_THRESHOLD):
+            if(Delta_L < DIFF_THRESHOLD and Delta_S < DIFF_THRESHOLD and iteration > 100):
                 break
 
             L_pred = L_new
@@ -60,17 +80,20 @@ class FA_Vectorised:
         
     # -----------------------------------------------------
     # Internal Functions
+    # n: No of Features in X. 
+    # m: No of Samples.
+    # d: No of Factors.
 
     def _get_new_L(self, X, E1, E2):
         '''
-        Returns prediction for L(n,d).
+        Returns updated prediction for L(n,d).
         '''
         L_pred = mul(mul(X,E1.T), inv(E2))
         return L_pred
 
     def _get_new_S(self, X, E1, L_new):
         '''
-        Returns prediction for S(n,n).
+        Returns updated prediction for S(n,n).
         '''
         n = X.shape[0]
         S_pred = torch.diag(mul(X,X.T) - mul(L_new,mul(E1,X.T))) / n
